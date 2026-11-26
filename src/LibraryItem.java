@@ -29,6 +29,19 @@ public abstract class LibraryItem {
     public Loan getCurrentLoan() {
         return currentLoan;
     }
+
+    void checkAvailable() throws ItemNotAvailableException {
+        if (!isBorrowable()) {
+            throw ItemNotAvailableException.notBorrowable(id);
+        }
+        if (isOnLoan()) {
+            throw ItemNotAvailableException.onLoan(id);
+        }
+    }
+
+    void setCurrentLoan(Loan loan) {
+        currentLoan = loan;
+    }
 }
 
 interface Borrowable {

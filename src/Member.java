@@ -24,6 +24,20 @@ public abstract class Member {
         return Collections.unmodifiableList(loans);
     }
 
+    void checkCanBorrow() throws BorrowLimitExceededException {
+        if (loans.size() >= getMaxItems()) {
+            throw new BorrowLimitExceededException(id, getMaxItems());
+        }
+    }
+
+    void addLoan(Loan loan) {
+        loans.add(loan);
+    }
+
+    void removeLoan(Loan loan) {
+        loans.remove(loan);
+    }
+
     public abstract int getMaxItems();
 
     public abstract int getLoanPeriod();
