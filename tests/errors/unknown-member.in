@@ -1,0 +1,4 @@
+ADD_BOOK|B1|Data Structures|Sen
+BORROW|S9|B1
+LOANS|S9
+INVENTORY
