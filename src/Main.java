@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -50,21 +51,64 @@ public class Main {
             case "INVENTORY":
                 printInventory();
                 return;
+            case "SEARCH":
+                printSearch(fields[1]);
+                return;
+            case "LOANS":
+                printLoans(fields[1]);
+                return;
+            case "OVERDUE":
+                printOverdue();
+                return;
             default:
                 throw new IllegalArgumentException("Unknown command: " + fields[0]);
         }
         System.out.println("OK");
     }
 
-    private void printInventory() {
-        List<LibraryItem> items = library.inventory();
-        if (items.isEmpty()) {
+    private void printRows(List<String> rows) {
+        if (rows.isEmpty()) {
             System.out.println("NONE");
             return;
         }
-        for (LibraryItem item : items) {
-            System.out.println(item.getId() + "|" + item.getType() + "|" + describeStatus(item));
+        for (String row : rows) {
+            System.out.println(row);
         }
+    }
+
+    private void printInventory() {
+        List<String> rows = new ArrayList<>();
+        for (LibraryItem item : library.inventory()) {
+            rows.add(item.getId() + "|" + item.getType() + "|" + describeStatus(item));
+        }
+        printRows(rows);
+    }
+
+    private void printSearch(String text) {
+        List<String> rows = new ArrayList<>();
+        for (LibraryItem item : library.search(text)) {
+            rows.add(item.getId() + "|" + item.getType() + "|" + item.getTitle());
+        }
+        printRows(rows);
+    }
+
+    private void printLoans(String memberId) throws MemberNotFoundException {
+        List<String> rows = new ArrayList<>();
+        for (Loan loan : library.loansOf(memberId)) {
+            LibraryItem item = loan.getItem();
+            rows.add(item.getId() + "|" + item.getTitle() + "|" + loan.getDueDay());
+        }
+        printRows(rows);
+    }
+
+    private void printOverdue() {
+        List<String> rows = new ArrayList<>();
+        int today = library.getToday();
+        for (Loan loan : library.overdue()) {
+            rows.add(loan.getItem().getId() + "|" + loan.getMember().getId() + "|"
+                    + loan.daysLate(today) + "|" + loan.fineAsOf(today));
+        }
+        printRows(rows);
     }
 
     private String describeStatus(LibraryItem item) {
